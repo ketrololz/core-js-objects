@@ -286,8 +286,17 @@ function sortCitiesArray(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(arr, keySelector, valueSelector) {
+  const newObj = {};
+  arr.forEach((obj) => {
+    if (Object.hasOwn(newObj, keySelector(obj))) {
+      newObj[keySelector(obj)].push(valueSelector(obj));
+    } else {
+      newObj[keySelector(obj)] = [valueSelector(obj)];
+    }
+  });
+
+  return new Map(Object.entries(newObj));
 }
 
 /**
@@ -345,32 +354,47 @@ function group(/* array, keySelector, valueSelector */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  selector: '',
+
+  element(value) {
+    this.selector += value;
+    return this;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.selector += `#${value}`;
+    return this;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.selector += `.${value}`;
+    return this;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.selector += `[${value}]`;
+    return this;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.selector += `:${value}`;
+    return this;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.selector += `::${value}`;
+    return this;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(sel1, comb, sel2) {
+    this.selector = `${sel1.stringify()} ${comb} ${sel2.stringify()}`;
+    return this;
+  },
+
+  stringify() {
+    const value = this.selector;
+    this.selector = '';
+    return value;
   },
 };
 
